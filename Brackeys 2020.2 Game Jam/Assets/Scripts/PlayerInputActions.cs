@@ -33,6 +33,14 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""RevertTime"",
+                    ""type"": ""Button"",
+                    ""id"": ""2bed41fc-dc21-4ac4-ad7b-f1eca3d4902a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -79,6 +87,17 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4571e283-b34e-45d5-ab45-3866cd705841"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""RevertTime"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -101,6 +120,7 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         m_PlayerControls = asset.FindActionMap("PlayerControls", throwIfNotFound: true);
         m_PlayerControls_Move = m_PlayerControls.FindAction("Move", throwIfNotFound: true);
         m_PlayerControls_Jump = m_PlayerControls.FindAction("Jump", throwIfNotFound: true);
+        m_PlayerControls_RevertTime = m_PlayerControls.FindAction("RevertTime", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -152,12 +172,14 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     private IPlayerControlsActions m_PlayerControlsActionsCallbackInterface;
     private readonly InputAction m_PlayerControls_Move;
     private readonly InputAction m_PlayerControls_Jump;
+    private readonly InputAction m_PlayerControls_RevertTime;
     public struct PlayerControlsActions
     {
         private @PlayerInputActions m_Wrapper;
         public PlayerControlsActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_PlayerControls_Move;
         public InputAction @Jump => m_Wrapper.m_PlayerControls_Jump;
+        public InputAction @RevertTime => m_Wrapper.m_PlayerControls_RevertTime;
         public InputActionMap Get() { return m_Wrapper.m_PlayerControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -173,6 +195,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Jump.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
+                @RevertTime.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnRevertTime;
+                @RevertTime.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnRevertTime;
+                @RevertTime.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnRevertTime;
             }
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -183,6 +208,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @RevertTime.started += instance.OnRevertTime;
+                @RevertTime.performed += instance.OnRevertTime;
+                @RevertTime.canceled += instance.OnRevertTime;
             }
         }
     }
@@ -200,5 +228,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnRevertTime(InputAction.CallbackContext context);
     }
 }

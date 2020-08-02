@@ -9,11 +9,12 @@ public class PlayerControl : MonoBehaviour
     private float movimentInput;
     private float lastMoviment;
     private Rigidbody2D _rigidbody;
+    private GameManager gm;
 
     private float tVelocity;
     
     private Vector2 _velocity = Vector2.zero;
-    private bool isJumping = false;
+    private bool isJumping = true;
     
     const float groundedRadius = .2f;
     private bool grounded;
@@ -40,8 +41,10 @@ public class PlayerControl : MonoBehaviour
     void Awake()
     {
         inputActions = new PlayerInputActions();
+        gm = GameManager.gm;
         inputActions.PlayerControls.Move.performed += ctx => movimentInput = ctx.ReadValue<Vector2>().x;
         inputActions.PlayerControls.Jump.performed += ctx => JumpTrigger();
+        inputActions.PlayerControls.RevertTime.performed += ctx => ChangeTime();
     }
 
     void Start()
@@ -94,6 +97,12 @@ public class PlayerControl : MonoBehaviour
     {
         isJumping = true;
         lastMoviment = movimentInput;
+    }
+
+    void ChangeTime()
+    {
+        Debug.Log("changing");
+        gm.MoveTime();
     }
 
     private void OnEnable()
