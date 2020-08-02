@@ -5,33 +5,34 @@ using UnityEngine.Events;
 
 public class PlayerControl : MonoBehaviour
 {
-
-    [Header("Settings")]
-
     private PlayerInputActions inputActions;
     private float movimentInput;
+    private float lastMoviment;
     private Rigidbody2D _rigidbody;
 
-    [SerializeField] [Range(0f, 10f)] private float velocity = 5f;
     private float tVelocity;
-    [Range(0, .3f)] [SerializeField] private float movementSmoothing = .05f;
-    private Vector2 _velocity = Vector2.zero;
     
-    [SerializeField] private float jumpForce = 400f;
+    private Vector2 _velocity = Vector2.zero;
     private bool isJumping = false;
     
     const float groundedRadius = .2f;
     private bool grounded;
+
+    [Header("Settings")]
+
+    [SerializeField] [Range(0f, 10f)] private float velocity = 5f;
+    [Range(0, .3f)] [SerializeField] private float movementSmoothing = .05f;
+    [SerializeField] private float jumpForce = 400f;
+#pragma warning disable 649
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private Transform groundCheck;
+#pragma warning restore 649
 
 
 
     [Header("Events")]
 
     public UnityEvent OnLandEvent;
-
-
 
 
 
@@ -76,7 +77,9 @@ public class PlayerControl : MonoBehaviour
 
     public void Move()
     {
+
         Vector2 targetVelocity = new Vector2(movimentInput * tVelocity, _rigidbody.velocity.y);
+        
         _rigidbody.velocity = Vector2.SmoothDamp(_rigidbody.velocity, targetVelocity, ref _velocity, movementSmoothing);
 
         if (grounded && isJumping)
@@ -90,6 +93,7 @@ public class PlayerControl : MonoBehaviour
     void JumpTrigger()
     {
         isJumping = true;
+        lastMoviment = movimentInput;
     }
 
     private void OnEnable()
