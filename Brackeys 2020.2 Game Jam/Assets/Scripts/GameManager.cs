@@ -7,12 +7,16 @@ public class GameManager : MonoBehaviour
 {
 
     public static GameManager gm;
+    public GameObject player;
 
     private bool isPresent = true;
+
 
 #pragma warning disable 649
     [SerializeField] private GameObject presentTileSet;
     [SerializeField] private GameObject pastTileSet;
+    [SerializeField] private GameObject canvas;
+    public Animator timeTransition;
 #pragma warning restore 649
 
     void Awake()
@@ -27,46 +31,62 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (isPresent)
-        {
-            pastTileSet.SetActive(false);
-            presentTileSet.SetActive(true);
-        }
-        else
-        {
-            pastTileSet.SetActive(true);
-            presentTileSet.SetActive(false);
-        }
+       canvas.SetActive(true);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isPresent)
-        {
-            pastTileSet.SetActive(false);
-            presentTileSet.SetActive(true);
-        }
-        else
-        {
-            pastTileSet.SetActive(true);
-            presentTileSet.SetActive(false);
-        }
+
     }
 
     public void MoveTime()
     {
 
-        Debug.Log("change triggered");
+        StartCoroutine(TimeTransition());
+
+    }
+
+    IEnumerator TimeTransition()
+    {
         if (isPresent)
         {
             isPresent = false;
+            player.GetComponent<PlayerControl>().Freeze();
+            timeTransition.SetTrigger("Rewind");
+
+            yield return new WaitForSeconds(1f);
+
+            Debug.Log("faze 2");
+            pastTileSet.SetActive(true);
+            presentTileSet.SetActive(false);
+
+            yield return new WaitForSeconds(0.25f);
+
+            yield return new WaitForSeconds(1f);
+            Debug.Log("faze 3");
+            player.GetComponent<PlayerControl>().Unfreeze();
         }
         else
         {
-
             isPresent = true;
+            player.GetComponent<PlayerControl>().Freeze();
+            timeTransition.SetTrigger("Forward");
+
+            yield return new WaitForSeconds(1f);
+
+            Debug.Log("faze 2");
+            pastTileSet.SetActive(false);
+            presentTileSet.SetActive(true);
+
+            yield return new WaitForSeconds(0.25f);
+
+            yield return new WaitForSeconds(1f);
+            Debug.Log("faze 3");
+            player.GetComponent<PlayerControl>().Unfreeze();
         }
+        
+
     }
 
 }

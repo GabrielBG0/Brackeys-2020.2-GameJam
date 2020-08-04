@@ -7,7 +7,7 @@ public class PlayerControl : MonoBehaviour
 {
     private PlayerInputActions inputActions;
     private float movimentInput;
-    private float lastMoviment;
+    private bool canMove;
     private Rigidbody2D _rigidbody;
     private GameManager gm;
 
@@ -55,6 +55,7 @@ public class PlayerControl : MonoBehaviour
             OnLandEvent = new UnityEvent();
 
         tVelocity = velocity * 10;
+        canMove = true;
     }
 
     void FixedUpdate()
@@ -81,14 +82,17 @@ public class PlayerControl : MonoBehaviour
     public void Move()
     {
 
-        Vector2 targetVelocity = new Vector2(movimentInput * tVelocity, _rigidbody.velocity.y);
-        
-        _rigidbody.velocity = Vector2.SmoothDamp(_rigidbody.velocity, targetVelocity, ref _velocity, movementSmoothing);
-
-        if (grounded && isJumping)
+        if (canMove)
         {
-            grounded = false;
-            _rigidbody.AddForce(new Vector2(0, jumpForce));
+            Vector2 targetVelocity = new Vector2(movimentInput * tVelocity, _rigidbody.velocity.y);
+
+            _rigidbody.velocity = Vector2.SmoothDamp(_rigidbody.velocity, targetVelocity, ref _velocity, movementSmoothing);
+
+            if (grounded && isJumping)
+            {
+                grounded = false;
+                _rigidbody.AddForce(new Vector2(0, jumpForce));
+            }
         }
     }
 
@@ -96,13 +100,24 @@ public class PlayerControl : MonoBehaviour
     void JumpTrigger()
     {
         isJumping = true;
-        lastMoviment = movimentInput;
     }
 
     void ChangeTime()
     {
-        Debug.Log("changing");
         gm.MoveTime();
+    }
+
+    public void Freeze()
+    {
+        _rigidbody.isKinematic = true;
+        canMove = false;
+        _rigidbody.velocity = new Vector2(0, 0);
+    }
+
+    public void Unfreeze()
+    {
+        canMove = true;
+        _rigidbody.isKinematic = false;
     }
 
     private void OnEnable()
