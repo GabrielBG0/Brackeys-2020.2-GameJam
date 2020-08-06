@@ -41,7 +41,6 @@ public class PlayerControl : MonoBehaviour
     void Awake()
     {
         inputActions = new PlayerInputActions();
-        gm = GameManager.gm;
         inputActions.PlayerControls.Move.performed += ctx => movimentInput = ctx.ReadValue<Vector2>().x;
         inputActions.PlayerControls.Jump.performed += ctx => JumpTrigger();
         inputActions.PlayerControls.RevertTime.performed += ctx => ChangeTime();
@@ -54,6 +53,7 @@ public class PlayerControl : MonoBehaviour
         if (OnLandEvent == null)
             OnLandEvent = new UnityEvent();
 
+        gm = GameManager.gm;
         tVelocity = velocity * 10;
         canMove = true;
     }
@@ -104,7 +104,8 @@ public class PlayerControl : MonoBehaviour
 
     void ChangeTime()
     {
-        gm.MoveTime();
+        if (grounded)
+            gm.MoveTime();
     }
 
     public void Freeze()
