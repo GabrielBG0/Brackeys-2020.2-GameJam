@@ -9,6 +9,7 @@ public class PlayerControl : MonoBehaviour
     private float movimentInput;
     private bool canMove;
     private Rigidbody2D _rigidbody;
+    private Transform _transform;
     private GameManager gm;
 
     private float tVelocity;
@@ -18,6 +19,8 @@ public class PlayerControl : MonoBehaviour
     
     const float groundedRadius = .2f;
     private bool grounded;
+    private bool walking = false;
+    private bool right = true;
 
     [Header("Settings")]
 
@@ -27,6 +30,7 @@ public class PlayerControl : MonoBehaviour
 #pragma warning disable 649
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private Transform groundCheck;
+    [SerializeField] private Animator playerAnim;
 #pragma warning restore 649
 
 
@@ -49,6 +53,8 @@ public class PlayerControl : MonoBehaviour
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
+        _transform = GetComponent<Transform>();
+        playerAnim = GetComponent<Animator>();
 
         if (OnLandEvent == null)
             OnLandEvent = new UnityEvent();
@@ -56,6 +62,13 @@ public class PlayerControl : MonoBehaviour
         gm = GameManager.gm;
         tVelocity = velocity * 10;
         canMove = true;
+    }
+
+    void Update()
+    {
+        if (canMove)
+            playerAnim.SetFloat("Speed", Mathf.Abs(movimentInput));
+
     }
 
     void FixedUpdate()
@@ -88,18 +101,39 @@ public class PlayerControl : MonoBehaviour
 
             _rigidbody.velocity = Vector2.SmoothDamp(_rigidbody.velocity, targetVelocity, ref _velocity, movementSmoothing);
 
+            if (movimentInput > 0 && !right)
+            {
+                Flip();
+            }
+            else if (movimentInput < 0 && right)
+            {
+                Flip();
+            }
+
             if (grounded && isJumping)
             {
                 grounded = false;
                 _rigidbody.AddForce(new Vector2(0, jumpForce));
+                playerAnim.SetBool("Jump", true);
             }
+
         }
+        else
+        {
+            walking = false;
+        }
+
     }
 
 
     void JumpTrigger()
     {
         isJumping = true;
+    }
+
+    public void OnLanding()
+    {
+        playerAnim.SetBool("Jump", false);
     }
 
     void ChangeTime()
@@ -119,6 +153,15 @@ public class PlayerControl : MonoBehaviour
     {
         canMove = true;
         _rigidbody.isKinematic = false;
+    }
+
+    private void Flip()
+    {
+        right = !right;
+
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
     }
 
     private void OnEnable()
