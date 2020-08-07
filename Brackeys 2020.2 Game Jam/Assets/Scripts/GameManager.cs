@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     public GameObject player;
 
     private bool isPresent = true;
-
+    public Transform[] spawnPoints;
+    private int presentSpawnPoint = 0;
 
 #pragma warning disable 649
     [SerializeField] private GameObject presentTileSet;
@@ -34,7 +35,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       canvas.SetActive(true);
+        canvas.SetActive(true);
        presentTileSet.SetActive(true);
        pastTileSet.SetActive(false);
        postProcessing.enabled = true;
@@ -44,12 +45,8 @@ public class GameManager : MonoBehaviour
            pPSplitToning = st;
        }
        pPSplitToning.active = false;
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
+       Respawn();
     }
 
     public void MoveTime()
@@ -91,6 +88,16 @@ public class GameManager : MonoBehaviour
         }
         
 
+    }
+
+    public void UpdateSpawnPoint(int id)
+    {
+        presentSpawnPoint = id;
+    }
+
+    public void Respawn()
+    {
+        player.GetComponent<Transform>().position = spawnPoints[presentSpawnPoint].position;
     }
 
 }
