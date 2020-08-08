@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     public Transform[] spawnPoints;
     private int presentSpawnPoint = 0;
 
+    public GameObject[] win;
+
 #pragma warning disable 649
     [SerializeField] private GameObject presentTileSet;
     [SerializeField] private GameObject pastTileSet;
@@ -39,6 +41,8 @@ public class GameManager : MonoBehaviour
        presentTileSet.SetActive(true);
        pastTileSet.SetActive(false);
        postProcessing.enabled = true;
+       win[0].SetActive(true);
+       win[1].SetActive(false);
        SplitToning st;
        if (postProcessing.profile.TryGet<SplitToning>(out st))
        {
@@ -67,6 +71,8 @@ public class GameManager : MonoBehaviour
             pastTileSet.SetActive(true);
             presentTileSet.SetActive(false);
             pPSplitToning.active = true;
+            win[0].SetActive(false);
+            win[1].SetActive(true);
 
             yield return new WaitForSeconds(1.25f);
             player.GetComponent<PlayerControl>().Unfreeze();
@@ -82,6 +88,8 @@ public class GameManager : MonoBehaviour
             pastTileSet.SetActive(false);
             presentTileSet.SetActive(true);
             pPSplitToning.active = false;
+            win[0].SetActive(true);
+            win[1].SetActive(false);
 
             yield return new WaitForSeconds(1.25f);
             player.GetComponent<PlayerControl>().Unfreeze();
@@ -100,4 +108,9 @@ public class GameManager : MonoBehaviour
         player.GetComponent<Transform>().position = spawnPoints[presentSpawnPoint].position;
     }
 
+
+    public bool GetIsPresent()
+    {
+        return isPresent;
+    }
 }
